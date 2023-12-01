@@ -15,15 +15,7 @@ def replace_digits(line: str) -> str:
     return result
 
 
-
-lines: list[str] = read_file("day1.txt")
-total_sum = 0
-vals = []
-digits = { "1": 1, "2": 2, "3": 3, "4": 4, "5": 5, "6": 6, "7": 7, "8": 8, "9": 9}
-for line in lines:
-    line = replace_digits(line)
-    print(line)
-    indices = []
+def calculate_line(line: str) -> int:
     line_total = 0
     for char in line:
         if char.isnumeric():
@@ -33,7 +25,19 @@ for line in lines:
         if char.isnumeric():
             line_total += int(char)
             break
-    vals.append(line_total)
-    
-total_sum = sum(vals)
-print(total_sum)
+    return line_total
+
+def day1_part2(input_file: str="day1_sample.txt") -> int:
+    lines: list[str] = read_file(input_file)
+    total_sum = 0
+    vals = []
+
+    for line in lines:
+        line = replace_digits(line)
+        line_total = calculate_line(line)
+        vals.append(line_total)
+        
+    total_sum = sum(vals)
+    return total_sum
+
+print(day1_part2())
