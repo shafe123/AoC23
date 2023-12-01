@@ -27,7 +27,11 @@ def calculate_line(line: str) -> int:
             break
     return line_total
 
-def day1_part2(input_file: str="day1_sample.txt") -> int:
+def day1_part2(is_test: bool = True) -> int:
+    if is_test:
+        input_file = "data/day1_sample.txt"
+    else:
+        input_file = "data/day1.txt"
     lines: list[str] = read_file(input_file)
     total_sum = 0
     vals = []
@@ -40,4 +44,4 @@ def day1_part2(input_file: str="day1_sample.txt") -> int:
     total_sum = sum(vals)
     return total_sum
 
-print(day1_part2())
+print(day1_part2(False))
