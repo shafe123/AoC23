@@ -1,4 +1,4 @@
-def read_file(input_file: str, strip: bool = True):
+def read_file(input_file: str, strip: bool = True) -> list[str]:
     result = []
     with open(input_file) as in_file:
         for line in in_file:
