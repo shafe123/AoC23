@@ -6,47 +6,76 @@ def day3_part1(is_test: bool=True):
     else:
         file = "data/day3.txt"
     
-    all_lines = read_file(file)
+    grid = read_file(file)
 
-    grid = []
-    for line in all_lines:
-        row = []
+    close_vals = []
+    for row_index, line in enumerate(grid):
+        current_ints = []
 
-        for char in line:
-            if char == '.':
-                row.append(None)
-            if char.isnumeric():
-                row.append(int(char))
-            else:
-                row.append('x')
-        grid.append(row)
+        current_num = False
+        end_of_num = False
+        symbol_adjacent = False
+        for col_index, char in enumerate(line):
 
-    return grid_sum(grid)
+            # end of one number
+            if char == '.' and current_num or col_index == len(line) - 1:
+                end_of_num = True
 
-def grid_sum(grid: list[list[int | str | None]]):
-    sum_vals = []
-    for row_index, row in enumerate(grid):
-        for col_index, value in enumerate(row):
-            found = False
-            if value == None or value == 'x':
+                # last symbol check
+                if not symbol_adjacent:
+                    symbol_adjacent = check_up_down(grid, row_index, col_index)
+
+                if symbol_adjacent:
+                    close_vals.append(int(''.join(current_ints)))
+
+                current_num = False
+                end_of_num = False
+                symbol_adjacent = False
+                current_ints = []
+            
+            elif char == '.':
                 continue
+                
+            elif char.isnumeric():
+                current_ints.append(char)
 
-            for row_modifier in range(-1, 2, 1):
-                for col_modifier in range(-1, 2, 1):
-                    if row_modifier and col_modifier == 0:
-                        continue
-                    
-                    try:
-                        if grid[row_index + row_modifier][col_index + col_modifier] == 'x':
-                            sum_vals.append(value)
-                            found = True
-                            break
+                if not current_num:
+                    # check left side
+                    symbol_adjacent = check_up_down(grid, row_index, col_index - 1)
+
+                    try: # check to the left
+                        symbol_adjacent = symbol_adjacent or \
+                            grid[row_index][col_index - 1] != '.' and not grid[row_index][col_index - 1].isnumeric()
                     except:
-                        continue
+                        pass
 
-                if found:
-                    break
-    return sum(sum_vals)
+                current_num = True
+
+                if not symbol_adjacent:
+                    symbol_adjacent = check_up_down(grid, row_index, col_index)
+            
+            elif current_num:
+                close_vals.append(int(''.join(current_ints)))
+
+                current_num = False
+                end_of_num = False
+                symbol_adjacent = False
+                current_ints = []
+
+    return sum(close_vals)
+
+def check_up_down(grid, row_index, col_index):
+    symbol_adjacent = False
+    try:
+        symbol_adjacent = grid[row_index - 1][col_index] != '.' and not grid[row_index - 1][col_index].isnumeric()
+    except:
+        pass
+    try:
+        symbol_adjacent = symbol_adjacent or \
+            grid[row_index + 1][col_index] != '.' and not grid[row_index + 1][col_index].isnumeric()
+    except:
+        pass
+    return symbol_adjacent
 
 
 
@@ -57,4 +86,4 @@ def day3_part2(is_test: bool=True):
         file = "data/day3.txt"
 
 
-print(day3_part1())
+print(day3_part1(False))
