@@ -13,13 +13,11 @@ def day3_part1(is_test: bool=True):
         current_ints = []
 
         current_num = False
-        end_of_num = False
         symbol_adjacent = False
         for col_index, char in enumerate(line):
 
             # end of one number
-            if char == '.' and current_num or col_index == len(line) - 1:
-                end_of_num = True
+            if char == '.' and current_num:
 
                 # last symbol check
                 if not symbol_adjacent:
@@ -29,36 +27,46 @@ def day3_part1(is_test: bool=True):
                     close_vals.append(int(''.join(current_ints)))
 
                 current_num = False
-                end_of_num = False
                 symbol_adjacent = False
                 current_ints = []
             
+            # skip repeated '.'
             elif char == '.':
                 continue
-                
+            
+            # another number
             elif char.isnumeric():
                 current_ints.append(char)
 
+                # first number in the series
                 if not current_num:
-                    # check left side
+                    # check left corners
                     symbol_adjacent = check_up_down(grid, row_index, col_index - 1)
 
-                    try: # check to the left
+                    try: # check left side
                         symbol_adjacent = symbol_adjacent or \
                             grid[row_index][col_index - 1] != '.' and not grid[row_index][col_index - 1].isnumeric()
                     except:
                         pass
 
+                # check up / down
+                symbol_adjacent = symbol_adjacent or check_up_down(grid, row_index, col_index)
+
                 current_num = True
 
-                if not symbol_adjacent:
-                    symbol_adjacent = check_up_down(grid, row_index, col_index)
-            
-            elif current_num:
+                # end of the line
+                if col_index == len(line) - 1:
+                    if symbol_adjacent:
+                        close_vals.append(int(''.join(current_ints)))
+                    current_num = False
+                    symbol_adjacent = False
+                    current_ints = []
+
+            # special symbol on the line
+            elif char not in '0123456789.' and current_num:
                 close_vals.append(int(''.join(current_ints)))
 
                 current_num = False
-                end_of_num = False
                 symbol_adjacent = False
                 current_ints = []
 
