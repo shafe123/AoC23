@@ -1,7 +1,7 @@
 import unittest
 import day2
 
-class test_day1(unittest.TestCase):
+class test_day2(unittest.TestCase):
     def test_split_pulls(self):
         results = {
             "3 blue, 4 red": {'blue': 3, 'red': 4},
