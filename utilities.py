@@ -7,3 +7,11 @@ def read_file(input_file: str, strip: bool = True) -> list[str]:
             result.append(line)
 
     return result
+
+def get_lines(day: int, is_test: bool) -> list[str]:
+    if is_test:
+        file = f"data/day{day}_sample.txt"
+    else:
+        file = f"data/day{day}.txt"
+
+    return read_file(file)
