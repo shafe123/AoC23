@@ -8,10 +8,10 @@ def read_file(input_file: str, strip: bool = True) -> list[str]:
 
     return result
 
-def get_lines(day: int, is_test: bool) -> list[str]:
+def get_lines(day: int, is_test: bool, strip: bool = True) -> list[str]:
     if is_test:
         file = f"data/day{day}_sample.txt"
     else:
         file = f"data/day{day}.txt"
 
-    return read_file(file)
+    return read_file(file, strip)
