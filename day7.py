@@ -7,7 +7,7 @@ class CamelHand:
         High, Pair, TwoPair, Three, FullHouse, Four, Five = range(7)
 
     def __init__(self, hand: str) -> None:
-        conversion = {"T": 10, "J": 11, "Q": 12, "K": 13, "A": 14}
+        conversion = {"T": 10, "J": 1, "Q": 12, "K": 13, "A": 14}
 
         self.hand = []
         for char in hand:
@@ -20,20 +20,31 @@ class CamelHand:
 
     def __determine_type__(self):
         counts = Counter(self.hand)
-        if counts.most_common(1)[0][1] == 5:
+        num_jokers = counts[1] if 1 in counts else 0
+        del counts[1]
+
+        if len(counts) == 0 or counts.most_common(1)[0][1] == 5 - num_jokers:
             self.type = CamelHand.Types.Five
-        elif counts.most_common(1)[0][1] == 4:
+
+        elif counts.most_common(1)[0][1] == 4 - num_jokers:
             self.type = CamelHand.Types.Four
-        elif counts.most_common(2)[0][1] == 3 and counts.most_common(2)[1][1] == 2:
+
+        elif counts.most_common(2)[0][1] == 3 - num_jokers and counts.most_common(2)[1][1] == 2:
             self.type = CamelHand.Types.FullHouse
-        elif counts.most_common(1)[0][1] == 3:
+
+        elif counts.most_common(1)[0][1] == 3 - num_jokers:
             self.type = CamelHand.Types.Three
+
         elif counts.most_common(2)[0][1] == 2 and counts.most_common(2)[1][1] == 2:
             self.type = CamelHand.Types.TwoPair
-        elif counts.most_common(1)[0][1] == 2:
+
+        elif counts.most_common(1)[0][1] == 2 - num_jokers:
             self.type = CamelHand.Types.Pair
+
         else:
             self.type = CamelHand.Types.High
+
+        pass
 
     def __lt__(self, other):
         if self.type == other.type:
