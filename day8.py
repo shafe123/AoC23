@@ -36,3 +36,26 @@ def parse_file(is_test):
 
 
 print(part1(False))
+
+
+import math
+def part2(is_test: bool = True):
+    pattern, mapping = parse_file(is_test)
+    As = [key for key in mapping if key[-1] == "A"]
+    
+    counts = []
+    for A in As:
+        location = A
+        counts.append(0)
+        
+        while location[-1] != 'Z':
+            if pattern[counts[-1] % len(pattern)] == "L":
+                location = mapping[location][0]
+            else:
+                location = mapping[location][1]
+
+            counts[-1] += 1
+
+    return math.lcm(*counts)
+
+print(part2(False))
