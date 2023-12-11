@@ -53,16 +53,16 @@ def map_seed_range(seed_ranges: list[tuple[int, int]], maps):
                     break
                 source_range = (source, source + length - 1)
 
-                left = (start, min(end, source))
-                mid = (max(start, source), min(source_end, end))
-                right = (max(source_end, start), end)
+                # left = (start, min(end, source))
+                # mid = (max(start, source), min(source_end, end))
+                # right = (max(source_end, start), end)
 
-                if left[1] > left[0]:
-                    seed_ranges.append(left)
-                if mid[1] > mid[0]:
-                    locations.append((mid[0] - source + destination, mid[1] - source + destination))
-                if right[1] > right[0]:
-                    seed_ranges.append(right)
+                # if left[1] > left[0]:
+                #     seed_ranges.append(left)
+                # if mid[1] > mid[0]:
+                #     locations.append((mid[0] - source + destination, mid[1] - source + destination))
+                # if right[1] > right[0]:
+                #     seed_ranges.append(right)
 
     return locations
         
