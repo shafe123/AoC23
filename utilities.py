@@ -15,3 +15,9 @@ def get_lines(day: int, is_test: bool, strip: bool = True) -> list[str]:
         file = f"data/day{day}.txt"
 
     return read_file(file, strip)
+
+def print_grid(grid: list[list]):
+    for row in grid:
+        for val in row:
+            print(val, end='')
+        print()
