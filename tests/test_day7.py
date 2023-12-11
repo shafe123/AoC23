@@ -2,10 +2,10 @@ import unittest
 import day7
 
 class test_day7(unittest.TestCase):
-    def check_typing(self):
+    def test_check_typing(self):
         results = {'JJJJJ': day7.CamelHand.Types.Five}
 
-        for key, result in results:
+        for key, result in results.items():
             hand = day7.CamelHand(key)
             self.assertEqual(hand.type, result)
 
