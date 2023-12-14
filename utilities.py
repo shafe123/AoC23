@@ -21,3 +21,6 @@ def print_grid(grid: list[list]):
         for val in row:
             print(val, end='')
         print()
+
+def grid_string(grid: list[list]):
+    return ''.join([''.join(row) for row in grid])

@@ -1,5 +1,4 @@
-from utilities import get_lines, print_grid
-from functools import lru_cache
+from utilities import get_lines, grid_string
 
 
 def percolate_up(grid, row_index, col_index):
@@ -41,22 +40,32 @@ def rotate_list(grid):
     new_list = list(map(list, zip(*grid[::-1])))
     return new_list
 
-
+import copy
 def part2(is_test: bool = True):
     all_lines = get_lines(14, is_test)
 
     for index in range(len(all_lines)):
         all_lines[index] = list(all_lines[index])
 
-    for _ in range(100):
+    cache = {}
+    all_grids = []
+    for x in range(1000000):
         for _ in range(4):
             for row_index, row in enumerate(all_lines):
                 for col_index, val in enumerate(row):
                     if val == 'O':
                         all_lines = percolate_up(all_lines, row_index, col_index)
             all_lines = rotate_list(all_lines)
+        
+        # detect cycles
+        flattened = grid_string(all_lines)
+        all_grids.append(copy.deepcopy(all_lines))
+        if flattened in cache:
+            cycle_length = x - cache[flattened]
+            final_index = cache[flattened] + (1000000000 - cache[flattened]) % cycle_length
+            return total_load(all_grids[final_index - 1])
 
-        print(total_load(all_lines))
+        cache[flattened] = x
         
 
 print(part2(False))
