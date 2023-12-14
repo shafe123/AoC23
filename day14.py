@@ -1,4 +1,5 @@
 from utilities import get_lines, print_grid
+from functools import lru_cache
 
 
 def percolate_up(grid, row_index, col_index):
@@ -8,6 +9,7 @@ def percolate_up(grid, row_index, col_index):
             grid[upper_row + 1][col_index] = '.'
         else:
             break
+    return grid
 
 
 def part1(is_test: bool = True):
@@ -21,6 +23,9 @@ def part1(is_test: bool = True):
             if val == 'O':
                 percolate_up(all_lines, row_index, col_index)
 
+    return total_load(all_lines)
+
+def total_load(all_lines):
     loads = []
     for row_index, row in enumerate(all_lines[::-1]):
         multiplier = row_index + 1
@@ -29,6 +34,29 @@ def part1(is_test: bool = True):
 
     return sum(loads)
 
-    
+# print(part1(False))
 
-print(part1(False))
+
+def rotate_list(grid):
+    new_list = list(map(list, zip(*grid[::-1])))
+    return new_list
+
+
+def part2(is_test: bool = True):
+    all_lines = get_lines(14, is_test)
+
+    for index in range(len(all_lines)):
+        all_lines[index] = list(all_lines[index])
+
+    for _ in range(100):
+        for _ in range(4):
+            for row_index, row in enumerate(all_lines):
+                for col_index, val in enumerate(row):
+                    if val == 'O':
+                        all_lines = percolate_up(all_lines, row_index, col_index)
+            all_lines = rotate_list(all_lines)
+
+        print(total_load(all_lines))
+        
+
+print(part2(False))
