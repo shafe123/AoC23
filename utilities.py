@@ -24,3 +24,6 @@ def print_grid(grid: list[list]):
 
 def grid_string(grid: list[list]):
     return ''.join([''.join(row) for row in grid])
+
+def add_tuples(tuple_one, tuple_two):
+    return tuple([one + two for one, two in zip(tuple_one, tuple_two)])

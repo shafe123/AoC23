@@ -237,5 +237,5 @@ def part2(is_test: bool = True):
     remainders = count_offset(exterior, 2, 2, main_loop)
     print(remainders)
 
-
-part2()
+if __name__ == "__main__":
+    part2()
