@@ -31,13 +31,13 @@ class Node:
         return hash(self.location)
 
 
-def build_graph(grid, start, goal):
+def build_graph(grid, start, goal, ignore_slope=False):
     nodes = {}
     nodes[start] = Node(start, None)
 
     to_visit = [nodes[start]]
     while to_visit:
-        current_node = to_visit.pop()
+        current_node = to_visit.pop(0)
         for neighbor in [(1, 0), (0, 1), (-1, 0), (0, -1)]:
             next_node = add_tuples(current_node.location, neighbor)
             if next_node == goal:
@@ -58,20 +58,20 @@ def build_graph(grid, start, goal):
             character = grid[next_node[0]][next_node[1]]
             if character == "#":
                 continue
-            elif character == ".":
-                add_node(to_visit, nodes, next_node, current_node)
-            elif character == ">" and neighbor == (0, -1):
+            elif not ignore_slope and character == ">" and neighbor == (0, -1):
                 continue
-            elif character == "v" and neighbor == (-1, 0):
+            elif not ignore_slope and character == "v" and neighbor == (-1, 0):
                 continue
-            elif character == ">":
+            elif not ignore_slope and character == ">":
                 add_node(
                     to_visit, nodes, add_tuples(next_node, (0, 1)), current_node, 2
                 )
-            elif character == "v":
+            elif not ignore_slope and character == "v":
                 add_node(
                     to_visit, nodes, add_tuples(next_node, (1, 0)), current_node, 2
                 )
+            else:
+                add_node(to_visit, nodes, next_node, current_node)
 
     return nodes
 
@@ -153,7 +153,6 @@ def recurse_paths(mapping: dict[tuple[int, int], Node]):
 
     return recurse(goal_node) - 1
 
-
 def part1(is_test: bool = True):
     all_lines = get_lines(23, is_test)
     goal = (len(all_lines) - 1, len(all_lines[0]) - 2)
@@ -162,6 +161,13 @@ def part1(is_test: bool = True):
     collapse_map(all_nodes)
     return recurse_paths(all_nodes)
 
+def part2(is_test: bool = True):
+    all_lines = get_lines(23, is_test)
+    goal = (len(all_lines) - 1, len(all_lines[0]) - 2)
+    winners = []
+    all_nodes = build_graph(all_lines, (0, 1), goal, True)
+    collapse_map(all_nodes)
+    return recurse_paths(all_nodes)
 
 if __name__ == "__main__":
-    print(part1(False))
+    print(part2())
