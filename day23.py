@@ -4,8 +4,9 @@ from itertools import count
 from tqdm import tqdm
 import sys
 
+
 class Node:
-    def __init__(self, location, from_node, weight = 1) -> None:
+    def __init__(self, location, from_node, weight=1) -> None:
         self.weight = weight
         self.location = location
         self.to_nodes = []
@@ -18,13 +19,14 @@ class Node:
 
     def is_junction(self):
         return len(self.to_nodes) > 1
-    
+
     def __str__(self) -> str:
-        return f'{self.location} - {self.weight}'
-    
+        fine_print = [node.location for node in self.to_nodes]
+        return f"{self.location} - {self.weight} - {fine_print}"
+
     def __repr__(self) -> str:
         return self.__str__()
-    
+
     def __hash__(self) -> int:
         return hash(self.location)
 
@@ -41,66 +43,115 @@ def build_graph(grid, start, goal):
             if next_node == goal:
                 nodes[goal] = Node(goal, current_node, 1)
                 nodes[goal].is_goal = True
+                continue
             if next_node in [node.location for node in current_node.from_nodes]:
                 continue
 
-            if next_node[0] < 0 or next_node[1] < 0 or next_node[0] >= len(grid) or next_node[1] >= len(grid[0]):
+            if (
+                next_node[0] < 0
+                or next_node[1] < 0
+                or next_node[0] >= len(grid)
+                or next_node[1] >= len(grid[0])
+            ):
                 continue
-            
+
             character = grid[next_node[0]][next_node[1]]
-            if character == '#':
+            if character == "#":
                 continue
-            elif character == '.':
+            elif character == ".":
                 add_node(to_visit, nodes, next_node, current_node)
-            elif character == '>' and neighbor == (0, -1):
+            elif character == ">" and neighbor == (0, -1):
                 continue
-            elif character == 'v' and neighbor == (-1, 0):
+            elif character == "v" and neighbor == (-1, 0):
                 continue
-            elif character == '>':
-                add_node(to_visit, nodes, add_tuples(next_node, (0, 1)), current_node, 2)
-            elif character == 'v':
-                add_node(to_visit, nodes, add_tuples(next_node, (1, 0)), current_node, 2)
+            elif character == ">":
+                add_node(
+                    to_visit, nodes, add_tuples(next_node, (0, 1)), current_node, 2
+                )
+            elif character == "v":
+                add_node(
+                    to_visit, nodes, add_tuples(next_node, (1, 0)), current_node, 2
+                )
 
     return nodes
 
-def add_node(queue: list[Node], map: dict[tuple[int, int], Node], next_location: tuple[int, int], current_node: Node, weight: int = 1):
+
+def add_node(
+    queue: list[Node],
+    map: dict[tuple[int, int], Node],
+    next_location: tuple[int, int],
+    current_node: Node,
+    weight: int = 1,
+):
     if next_location in map:
         next_node = map[next_location]
         next_node.from_nodes.append(current_node)
+        current_node.to_nodes.append(next_node)
     else:
         new_node = Node(next_location, current_node, weight)
         map[next_location] = new_node
         queue.append(new_node)
-    
+
+
 def collapse_map(mapping: dict[tuple[int, int], Node]):
-    deleted = []
-    to_delete = list(mapping.keys())
-    while to_delete:
-        location = to_delete.pop(0)
-        node = mapping[location]
+    to_visit = [mapping[(0, 1)]]
 
+    while to_visit:
+        current_node = to_visit.pop()
 
-        while len(node.to_nodes) == 1 and len(node.to_nodes[0].from_nodes) <= 1:
-            neighbor = node.to_nodes[0]
-            if neighbor.is_goal:
-                node.is_goal = neighbor.is_goal
+        # this is a 'to' branch
+        if len(current_node.to_nodes) == 2:
+            to_visit.extend(current_node.to_nodes)
+            continue
+        elif len(current_node.to_nodes) == 0:
+            continue
 
-            # update the next nodes weight and pointer
-            node.weight += neighbor.weight
-            node.to_nodes = neighbor.to_nodes.copy()
-            
-            # update the next nodes neighbors from node
-            for neighbors_neighbor in neighbor.to_nodes:
+        neighbor = current_node.to_nodes[0]
+        # this is a 'from' branch
+        if len(neighbor.from_nodes) == 2:
+            if neighbor not in to_visit:
+                to_visit.insert(0, neighbor)
+            continue
+        
+        # otherwise, this is just one stop along a path with no branches
+        if neighbor.is_goal:
+            current_node.is_goal = neighbor.is_goal
+
+        # update the neighbors' from nodes
+        for neighbors_neighbor in neighbor.to_nodes:
+            if neighbor in neighbors_neighbor.from_nodes:
                 neighbors_neighbor.from_nodes.remove(neighbor)
-                neighbors_neighbor.from_nodes.append(node)
+            neighbors_neighbor.from_nodes.append(current_node)
 
-            deleted.append(neighbor.location)
+        # update the node's weight and pointer
+        current_node.weight += neighbor.weight
+        current_node.to_nodes = neighbor.to_nodes.copy()
+
+        # delete the neighbor from the maps
+        if neighbor.location in mapping:
             del mapping[neighbor.location]
-            if neighbor.location in to_delete:
-                to_delete.remove(neighbor.location)
+
+        to_visit.append(current_node)
+
+
+def recurse(current_node: Node):
+    if current_node.location == (0, 1):
+        return current_node.weight
+
+    result = [
+        recurse(node) + current_node.weight for node in current_node.from_nodes
+    ]
+    return max(result)
+
 
 def recurse_paths(mapping: dict[tuple[int, int], Node]):
-    pass
+    paths = []
+    goal_node = None
+    for node in mapping.values():
+        if node.is_goal:
+            goal_node = node
+
+    return recurse(goal_node) - 1
 
 
 def part1(is_test: bool = True):
@@ -109,11 +160,8 @@ def part1(is_test: bool = True):
     winners = []
     all_nodes = build_graph(all_lines, (0, 1), goal)
     collapse_map(all_nodes)
-    string = grid_string(all_lines)
-    print(string.count('.'),string.count('>'),string.count('v'))
-    print(len(all_nodes))
-
+    return recurse_paths(all_nodes)
 
 
 if __name__ == "__main__":
-    print(part1())
+    print(part1(False))
