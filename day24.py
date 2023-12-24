@@ -49,6 +49,30 @@ def part1(is_test: bool = True):
                 collisions.append((vector_one, vector_two))
     return len(collisions)
 
+def part2(is_test: bool = True):
+    all_lines = get_lines(24, is_test)
+    hailstones = parse_input(all_lines)
+    solution = build_equations(hailstones)
+    return solution
+
+def build_equations(hailstones: list[tuple], grouping = 8):
+    x, y, z, dx, dy, dz, t = sp.symbols('x y z dx dy dz t')
+    solutions = []
+    for offset in range(0, len(hailstones) - 1, grouping):
+        equations = []
+        t_symbols = []
+        for index in range(8):
+            x1, y1, z1, dx1, dy1, dz1 = hailstones[offset + index]  
+            t_symbol = sp.symbols(f't_{index}')
+            t_symbols.append(t_symbol)
+            equations.append(x1 + dx1 * t_symbol - x - dx * t_symbol)
+            equations.append(y1 + dy1 * t_symbol - y - dy * t_symbol)
+            equations.append(z1 + dz1 * t_symbol - z - dz * t_symbol)
+        print('solving...')
+        solutions.extend(sp.solve(equations, t_symbols + [x, y, z, dx, dy, dz], dict=True))
+        print(solutions[0][x] + solutions[0][y] + solutions[0][z])
+        input('wait...')
 
 if __name__ == "__main__":
-    print(part1(False))
+    # print(part1(False))
+    print(part2(False))
