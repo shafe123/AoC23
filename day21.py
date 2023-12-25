@@ -10,21 +10,16 @@ def find_s(grid: list[str]):
             return (row_index, row.find("S"))
 
 
-def part1(is_test: bool = True):
+def part2(is_test: bool = True):
     all_lines = get_lines(21, is_test)
     start_point = find_s(all_lines)
 
-    next_visit = [start_point]
-    to_visit = []
-    last_visit = []
+    next_visit = set([start_point])
+    tick_tocks = [next_visit]
 
     for i in tqdm(range(26501365)):
-        to_visit = deepcopy(next_visit)
-        last_visit = deepcopy(to_visit)
-        next_visit = []
-
-        while to_visit:
-            current_point = to_visit.pop()
+        tick_tocks.append(set())
+        for current_point in tick_tocks[i]:
             for neighbor in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
                 next_point = add_tuples(current_point, neighbor)
                 new_row = (
@@ -42,12 +37,12 @@ def part1(is_test: bool = True):
                 ):
                     continue
                 else:
-                    next_visit.append(next_point)
+                    if next_point not in tick_tocks[i - 1]:
+                        tick_tocks[i + 1].add(next_point)
 
-        next_visit = list(set(next_visit))
-
-    return len(next_visit)
+    total_count = sum([len(tick) for tick in tick_tocks[::-2]])
+    return total_count
 
 
 if __name__ == "__main__":
-    print(part1(False))
+    print(part2())

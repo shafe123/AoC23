@@ -24,7 +24,10 @@ def part1(is_test: bool = True):
     sub1, sub2 = make_cut(graph, 3)
     return len(sub1) * len(sub2)
 
+def part2(is_test: bool = True):
+    all_lines = get_lines(25, is_test)
+    graph = parse_input(all_lines)
 
 if __name__ == "__main__":
-    print(part1(False))
-    # print(part2(False))
+    # print(part1(False))
+    print(part2())

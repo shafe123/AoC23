@@ -25,5 +25,6 @@ def print_grid(grid: list[list]):
 def grid_string(grid: list[list]):
     return ''.join([''.join(row) for row in grid])
 
-def add_tuples(tuple_one, tuple_two):
-    return tuple([one + two for one, two in zip(tuple_one, tuple_two)])
+def add_tuples[T](tuple_one: tuple[T, T], tuple_two: tuple[T, T]) -> tuple[T, T]:
+    assert len(tuple_one) == 2 and len(tuple_two) == 2
+    return tuple([one + two for one, two in zip(tuple_one, tuple_two)]) # type: ignore
